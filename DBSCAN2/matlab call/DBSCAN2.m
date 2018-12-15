@@ -6,24 +6,25 @@ clear;clc;close all;
 [x1] = GenCyclicData(1,0.2,40);
 [x2] = GenCyclicData(2,0.2,100);
 [x3] = GenCyclicData(3,0.2,160);
-[x4]=  GenCyclicData(4,0.2,200);
+[x4]=  GenCyclicData(4,0.2,300);
 
 X = [x1;x2;x3;x4];
 
 %DBSCAN.exe传入参数
-num = 500;%这个点数得和上面的总和一样！
+num = 600;%这个点数得和上面的总和一样！
 eps = '.75 ';
 MinPits='7 ';
-OutputPath = 'points.txt';
+inputPath = 'points.txt';
+outputPath = 'classedPoints.txt';
 %写到文件
-fid = fopen(OutputPath,'w');
+fid = fopen(inputPath,'w');
 for i=1:num
     fprintf(fid,'%f %f \n',X(i,1),X(i,2));
 end
 
 %% 调用程序分类处理
 cppProgram = 'DBSCAN.exe';
-input = [cppProgram,blanks(2),OutputPath,blanks(2),MinPits,eps,blanks(2),num2str(num)]
+input = [cppProgram,blanks(2),inputPath,blanks(2),outputPath,blanks(2),MinPits,eps,blanks(2),num2str(num)]
  if(dos(input)~=1)
     display('调用失败\n');
  end
@@ -32,7 +33,7 @@ input = [cppProgram,blanks(2),OutputPath,blanks(2),MinPits,eps,blanks(2),num2str
 %% 处理（绘图）C++生成的文件
 
 
-Y=load('out1.txt');
+Y=load(outputPath);
 hold on;
 [m,n]=size(Y);
 k1=1;k2=0;
@@ -58,6 +59,6 @@ for i=1:m
         cnt=cnt+1;
     end
 end
-str = ['DBSCAN分类情况 ',' MinPits = ',MinPits,' eps = ',eps,'points num = ',num2str(num),' C= ',num2str(cnt-1)];
+str = ['DBSCAN分类情况 ',' MinPits = ',MinPits,' eps = ',eps,'points num = ',num2str(num),' C= ',num2str(cnt+1)];
 title(str);
 hold off;
